@@ -5,6 +5,16 @@ import SwiftUI
 import StoreKit
 
 
+/// A customizable SwiftUI view that presents a tip jar interface using StoreKit products.
+///
+/// `TippingView` allows you to display a list of in-app purchase products (typically consumables)
+/// so users can support your app via one-time contributions. It provides flexible slots for
+/// header, icon, and footer content, along with lifecycle callbacks for purchase events.
+///
+/// You can fully customize the UI while leveraging built-in StoreKit purchase handling.
+///
+/// - Note: Requires iOS 17.0 or later.
+/// - Important: Product identifiers passed in `ids` must be configured in App Store Connect.
 @available(iOS 17.0, *)
 public struct TippingView<Header: View, Icon: View, Footer: View>: View {
     private var thankingMessage: String = "Thanks for your support!"
@@ -17,6 +27,17 @@ public struct TippingView<Header: View, Icon: View, Footer: View>: View {
     private var onCompletion: (Product, Result<Product.PurchaseResult, any Error>)->()
     private var onDismiss: ()-> ()
     
+    /// Creates a new `TippingView`.
+    ///
+    /// - Parameters:
+    ///   - thankingMessage: Message shown after a successful purchase. Defaults to `"Thanks for your support!"`.
+    ///   - ids: Array of StoreKit product identifiers to display.
+    ///   - header: A view builder that provides the header content.
+    ///   - icon: A view builder that provides a custom icon for each product.
+    ///   - footer: A view builder that provides the footer content.
+    ///   - onStart: Callback triggered when a purchase starts.
+    ///   - onCompletion: Callback triggered when a purchase completes with a result.
+    ///   - onDismiss: Callback triggered when the view is dismissed.
     public init(
         thankingMessage: String = "Thanks for your support!",
         ids: [String],
@@ -52,6 +73,7 @@ public struct TippingView<Header: View, Icon: View, Footer: View>: View {
     @State private var alertMessage = ""
     @State private var updatesListener: Task<Void, Error>?
     @Environment(\.colorScheme) private var colorScheme
+    /// The content and behavior of the view.
     public var body: some View {
         let glassTint: Color = colorScheme == .dark ? .gray.opacity(0.15) : .white.opacity(0.8)
         VStack(spacing: 10) {
@@ -148,6 +170,23 @@ public struct TippingView<Header: View, Icon: View, Footer: View>: View {
 
 @available(iOS 17, *)
 public extension View {
+    /// Presents a full-screen tip jar interface using a modifier.
+    ///
+    /// This modifier provides a convenient way to integrate `TippingView` into any SwiftUI view
+    /// using a declarative API similar to native presentation modifiers like `.sheet` or `.fullScreenCover`.
+    ///
+    /// - Parameters:
+    ///   - isPresented: Binding that controls the presentation of the tip jar.
+    ///   - ids: Array of StoreKit product identifiers to display.
+    ///   - thankingMessage: Message shown after a successful purchase.
+    ///   - header: A view builder that provides the header content.
+    ///   - icon: A view builder that provides a custom icon for each product.
+    ///   - footer: A view builder that provides the footer content.
+    ///   - onStart: Callback triggered when a purchase starts.
+    ///   - onCompletion: Callback triggered when a purchase completes with a result.
+    ///   - onDismiss: Callback triggered when the view is dismissed.
+    ///
+    /// - Returns: A modified view that presents the tip jar UI.
     @ViewBuilder
     func tipJarUI<Header: View, Footer: View, Icon: View>(
         isPresented: Binding<Bool>,
@@ -176,6 +215,12 @@ public extension View {
             )
     }
     
+    /// Applies a platform-adaptive prominent button style.
+    ///
+    /// Uses `.glassProminent` style on supported iOS versions (26+),
+    /// otherwise falls back to `.borderedProminent`.
+    ///
+    /// - Returns: A styled view.
     @ViewBuilder
     func customGlassButtonStyle()-> some View {
         if #available(iOS 26, *){
@@ -189,6 +234,16 @@ public extension View {
         }
     }
     
+    /// Applies a glass-like background effect with graceful fallback.
+    ///
+    /// On newer iOS versions, this uses the system glass effect.
+    /// On older versions, it falls back to a clipped shape with shadows.
+    ///
+    /// - Parameters:
+    ///   - shape: The shape used for clipping and background.
+    ///   - glassTint: Optional tint color for the glass effect.
+    ///
+    /// - Returns: A view with a styled background.
     @ViewBuilder
     func customGlassBackground<S: Shape>(shape: S, glassTint: Color = .clear)-> some View {
         if #available(iOS 26, *){
@@ -207,6 +262,9 @@ public extension View {
     }
 }
 
+/// A view modifier responsible for presenting `TippingView` as a full-screen cover.
+///
+/// This is used internally by the `tipJarUI` modifier to handle presentation logic.
 @available(iOS 17.0, *)
 fileprivate struct TipJarUIModifier<Header: View, Footer: View, Icon: View>: ViewModifier {
     @Binding var isPresented: Bool
