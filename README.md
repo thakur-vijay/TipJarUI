@@ -22,13 +22,10 @@ TipJarUI is designed to feel like a **native iOS feature**, not a third-party ad
 
 ## 📱 Demo
 
-> 🎬 Add your simulator recording / App Preview here
-
-```
-https://your-demo-video-or-github-asset-link.mp4
-```
-
----
+<p float="left">
+  <img src="https://github.com/user-attachments/assets/2264c66b-bce3-46de-80c1-40826f48ba83" width="200" />
+  <img src="https://github.com/user-attachments/assets/2d6b8889-e0ce-4340-be49-5f0b898d31b5" width="200" />
+</p>
 
 ## 🚀 Installation
 
